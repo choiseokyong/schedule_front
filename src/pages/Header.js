@@ -2,8 +2,9 @@ import React, { useRef, useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ScheduleForm from "../schedule/ScheduleForm";
+import TeamForm from "../team/TeamForm";
 
-function Header({ currentDate, setCurrentDate, today }) {
+function Header({ currentDate, setCurrentDate, today, onSelect }) {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -68,9 +69,22 @@ function Header({ currentDate, setCurrentDate, today }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState([]);
 
+  //팀 등록
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [teamEvents, setTeamEvents] = useState([]);
+
   const handleSave = (event) => {
     setEvents([...events, event]);
     console.log("일정 등록됨:", event);
+  };
+
+  const handleTeamSave = (event) => {
+    setTeamEvents([...teamEvents, event]);
+    console.log("팀 등록됨:", event);
+  };
+
+  const handleselect = (e) => {
+    onSelect(e.target.value); // 선택한 값을 Body로 전달
   };
 
   return (
@@ -120,9 +134,9 @@ function Header({ currentDate, setCurrentDate, today }) {
 
         <div className="util">
           <div className="util-planer">
-            <select name="util-planer" defaultValue="personal">
-              <option value="personal">개인 일정</option>
-              <option value="group">가족 일정</option>
+            <select name="util-planer" defaultValue="personal" onChange={handleselect}>
+              <option value="개인">개인 일정</option>
+              <option value="팀">팀 일정</option>
             </select>
           </div>
           <a href="#" className="btn-basic" data-util="setting">
@@ -140,10 +154,24 @@ function Header({ currentDate, setCurrentDate, today }) {
           <ScheduleForm
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
+            onSave={handleTeamSave}
+            onNo=""
+          />
+          <a
+            href="#"
+            onClick={() => setIsTeamModalOpen(true)}
+            className="btn-basic color"
+            data-util="team"
+          >
+            팀 등록
+          </a>
+          {/* 팀 등록 폼 */}
+          <TeamForm
+            isOpen={isTeamModalOpen}
+            onClose={() => setIsTeamModalOpen(false)}
             onSave={handleSave}
             onNo=""
           />
-
           <a ref={profileRef} className="profile">
             <img
               src={

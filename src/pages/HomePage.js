@@ -5,12 +5,14 @@ import "../css/common.css";
 import "../css/profile_home.css";
 import "../css/Schedule.css";
 import ScheduleForm from "../schedule/ScheduleForm";
+import TeamForm from "../team/TeamForm";
 import { LocalHostInfoContext } from "../context/LocalHostInfoContext";
-
+import Notification from '../schedule/Notification';
 
 function HomePage() {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
+  const [selectValue, setSelectValue] = useState('개인'); // 일정 선택(개인,팀)
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -66,10 +68,15 @@ function HomePage() {
 
   return (
     <>
+      <div style={{ paddingTop: '50px' }}>
+        <Notification message="🔔 오늘 오후 2시에 회의가 예정되어 있습니다." />
+        
+      </div>
       <Header
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
         today={today}
+        onSelect={setSelectValue}
       />
 
      
@@ -118,8 +125,59 @@ function HomePage() {
                             <i className="day-number">{date.day}</i>
                             <div className="schedules">
                               {schedules.map((schedule, index) =>{
-                                  
-                                 if (nowDate >= schedule.startDate && nowDate <= schedule.endDate){
+                                  const day = new Date(nowDate).getDay();
+                                  if(schedule.category != selectValue){
+                                    return;
+                                  }
+                                   if (
+                                  schedule.repeat == "주중" &&
+                                  day >= 1 &&
+                                  day <= 5 &&
+                                  nowDate >= schedule.startDate
+                                ) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="schedule-item"
+                                      onClick={() => {
+                                        setIsModalOpen(true);
+                                        setNo(schedule.no);
+                                      }}
+                                    >
+                                      <div
+                                        className="schedule-bar"
+                                        style={{
+                                          backgroundColor: schedule.color,
+                                        }}
+                                      >
+                                        {schedule.title}
+                                      </div>
+                                    </div>
+                                  );
+                                } else if (
+                                  schedule.repeat == "매일" &&
+                                  nowDate >= schedule.startDate
+                                ) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="schedule-item"
+                                      onClick={() => {
+                                        setIsModalOpen(true);
+                                        setNo(schedule.no);
+                                      }}
+                                    >
+                                      <div
+                                        className="schedule-bar"
+                                        style={{
+                                          backgroundColor: schedule.color,
+                                        }}
+                                      >
+                                        {schedule.title}
+                                      </div>
+                                    </div>
+                                  );
+                                } else if (nowDate >= schedule.startDate && nowDate <= schedule.endDate){
                                   return(
                                     <div key={index} className="schedule-item" onClick={() => {
                                       setIsModalOpen(true);
@@ -134,7 +192,7 @@ function HomePage() {
                                       <div
                                         className="schedule-bar"
                                         style={{
-                                          backgroundColor: "#1E90FF",
+                                          backgroundColor: schedule.color,
                                         }}
                                       >
                                         {nowDate == schedule.startDate ? schedule.title : ""}
@@ -160,12 +218,12 @@ function HomePage() {
         </div>
       </div>
       {/* 일정 등록 폼 */}
-                              <ScheduleForm
-                                isOpen={isModalOpen}
-                                onClose={() => setIsModalOpen(false)}
-                                onSave={handleSave}
-                                onNo={no}
-                              />
+      <ScheduleForm
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        onNo={no}
+      />
     </>
   );
 }

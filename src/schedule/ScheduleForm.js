@@ -48,7 +48,7 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
     }else{
       path = "modify";
     }
-    console.log(path);
+    
     fetch(`${LocalHostInfoContext.schedulePath}/api/${path}`, {
       method: "POST",
       // credentials: "include", // 쿠키를 포함하도록 설정
@@ -202,6 +202,48 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
               />
               <label htmlFor="state2">비공개</label>
             </div>
+          </div>
+
+          <label className={styles.label}>일정</label>
+          <div className={styles.formGroup}>
+            <select
+              id="category"
+              name="category"
+              value={data.category}
+              onChange={changeValue}
+              className={styles.select}
+            >
+              <option value="개인">개인일정</option>
+              <option value="팀">팀일정</option>
+            </select>
+          </div>
+
+          <label className={styles.label}>색상</label>
+          <div className={styles.colorPalette}>
+            {[
+              "#1E90FF",
+              "#FF6347",
+              "#32CD32",
+              "#FFD700",
+              "#8A2BE2",
+              "#FF69B4",
+            ].map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setData({ ...data, color })}
+                style={{
+                  backgroundColor: color,
+                  width: "24px",
+                  height: "24px",
+                  marginRight: "6px",
+                  border:
+                    data.color === color ? "2px solid black" : "1px solid #ccc",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                }}
+              />
+            ))}
           </div>
 
           <div className={styles.buttonGroup}>

@@ -1,0 +1,35 @@
+.notification-banner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #fff8db;
+  border-bottom: 1px solid #f1c40f;
+  color: #8a6d3b;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.notification-content {
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-message {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: #8a6d3b;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.notification-close:hover {
+  color: #5a471f;
+}

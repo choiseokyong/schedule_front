@@ -6,14 +6,8 @@ import { formatPhoneNumber } from "../utils/functions";
 
 function LoginPage() {
   const containerRef = useRef(null);
-  const { user, setUser } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user?.id) {
-      window.location.href = "/";
-    }
-  }, [user, navigate]);
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
@@ -34,25 +28,24 @@ function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch("http://localhost:8080/member/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email: loginEmail, pw: loginPw }),
-      });
 
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("userInfo", JSON.stringify(data));
-        alert("로그인 성공!");
-        window.location.href = "/";
-      } else {
-        const errorData = await res.text();
-        throw new Error(errorData);
-      }
-    } catch (error) {
-      alert("로그인 실패 : " + error.message);
+    const res = await fetch("http://localhost:8080/member/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email: loginEmail, pw: loginPw }),
+    });
+
+    if (res.ok) {
+      const userData = await res.json();
+      setUser(userData); // 로그인 상태 저장
+
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin") || "/";
+      sessionStorage.removeItem("redirectAfterLogin");
+
+      window.location.href = redirectPath;
+    } else {
+      alert("로그인 실패");
     }
   };
 
@@ -72,7 +65,6 @@ function LoginPage() {
 
       if (!res.ok) throw new Error("Signup failed");
 
-      const data = await res.text();
       alert("회원가입 성공!");
       window.location.href = "/";
 
@@ -91,39 +83,15 @@ function LoginPage() {
             <form onSubmit={handleSignup}>
               <h1>Create Account</h1>
               <div className="social-links">
-                <div><a href="#"><i className="fa fa-facebook" aria-hidden="true"></i></a></div>
-                <div><a href="#"><i className="fa fa-twitter" aria-hidden="true"></i></a></div>
-                <div><a href="#"><i className="fa fa-linkedin" aria-hidden="true"></i></a></div>
+                <div><a href="#"><i className="fa fa-facebook" /></a></div>
+                <div><a href="#"><i className="fa fa-twitter" /></a></div>
+                <div><a href="#"><i className="fa fa-linkedin" /></a></div>
               </div>
               <span>or use your email for registration</span>
-              <input
-                type="text"
-                placeholder="Name"
-                value={signupName}
-                onChange={(e) => setSignupName(e.target.value)}
-                required
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                value={signupEmail}
-                onChange={(e) => setSignupEmail(e.target.value)}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Phone"
-                value={signupPhone}
-                onChange={(e) => setSignupPhone(formatPhoneNumber(e.target.value))}
-                maxLength={13}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={signupPw}
-                onChange={(e) => setSignupPw(e.target.value)}
-                required
-              />
+              <input type="text" placeholder="Name" value={signupName} onChange={(e) => setSignupName(e.target.value)} required />
+              <input type="email" placeholder="Email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
+              <input type="text" placeholder="Phone" value={signupPhone} onChange={(e) => setSignupPhone(formatPhoneNumber(e.target.value))} maxLength={13} />
+              <input type="password" placeholder="Password" value={signupPw} onChange={(e) => setSignupPw(e.target.value)} required />
               <button className="form_btn" type="submit">Sign Up</button>
             </form>
           </div>
@@ -133,33 +101,15 @@ function LoginPage() {
             <form onSubmit={handleLogin}>
               <h1>Sign In</h1>
               <div className="social-links">
-                <div><a href="#"><i className="fa fa-facebook" aria-hidden="true"></i></a></div>
-                <div><a href="#"><i className="fa fa-twitter" aria-hidden="true"></i></a></div>
-                <div><a href="#"><i className="fa fa-linkedin" aria-hidden="true"></i></a></div>
+                <div><a href="#"><i className="fa fa-facebook" /></a></div>
+                <div><a href="#"><i className="fa fa-twitter" /></a></div>
+                <div><a href="#"><i className="fa fa-linkedin" /></a></div>
               </div>
               <span>or use your account</span>
-              <input
-                type="email"
-                placeholder="Email"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={loginPw}
-                onChange={(e) => setLoginPw(e.target.value)}
-                required
-              />
+              <input type="email" placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+              <input type="password" placeholder="Password" value={loginPw} onChange={(e) => setLoginPw(e.target.value)} required />
               <button className="form_btn" type="submit">Sign In</button>
-              <button
-                type="button"
-                className="form_btn"
-                onClick={() => navigate("/find")}
-              >
-                Find
-              </button>
+              <button type="button" className="form_btn" onClick={() => navigate("/find")}>Find</button>
             </form>
           </div>
 

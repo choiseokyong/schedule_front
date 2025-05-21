@@ -87,8 +87,6 @@ function MyInfoEditPage() {
                 <div><a href="#"><i className="fa fa-linkedin" /></a></div>
               </div>
 
-              <span>이름 또는 비밀번호를 변경할 수 있습니다</span>
-
               <div className="mypage-profile-wrapper">
                 <div className="mypage-image-circle">
                   <img
@@ -143,6 +141,7 @@ function MyInfoEditPage() {
               />
 
               <button type="submit" className="form_btn">Edit My info</button>
+              <br></br>
             </form>
           </div>
         </div>
