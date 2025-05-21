@@ -21,7 +21,7 @@ function HomePage() {
   const startDay = firstDay.getDay(); // getDay - 요일
   const totalDays = lastDay.getDate(); // 마지막 일 - 31
   const prevLastDay = new Date(year, month, 0).getDate();
-  
+
   const daysArray = [];
 
   for (let i = startDay - 1; i >= 0; i--) {
@@ -48,7 +48,6 @@ function HomePage() {
     ) // 일정 불러오는 백엔드 API 주소
       .then((res) => res.json())
       .then((data) => {
-        
         setSchedules(data); // 예: [{title, startDate, endDate, color}]
       })
       .catch((err) => {
@@ -57,14 +56,14 @@ function HomePage() {
   }, []);
 
   //일정 등록
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [events, setEvents] = useState([]);
-    const [no, setNo] = useState([]);
-  
-    const handleSave = (event) => {
-      setEvents([...events, event]);
-      console.log("일정 등록됨:", event);
-    };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [no, setNo] = useState(null);
+
+  const handleSave = (event) => {
+    setEvents([...events, event]);
+    console.log("일정 등록됨:", event);
+  };
 
   return (
     <>
@@ -78,8 +77,6 @@ function HomePage() {
         today={today}
         onSelect={setSelectValue}
       />
-
-     
 
       <div id="container">
         <div className="wrap">
@@ -108,13 +105,16 @@ function HomePage() {
                           month === today.getMonth() &&
                           date.day === today.getDate();
 
-                          let nowDate = null;
-                          if(date.currentMonth){
-                            const paddedMonth = String(month+1).padStart(2, '0');
-                            const paddedDay = String(date.day).padStart(2, '0');
-                            nowDate = year+"-"+paddedMonth+"-"+paddedDay;
-                          }
-                          
+                        let nowDate = null;
+                        if (date.currentMonth) {
+                          const paddedMonth = String(month + 1).padStart(
+                            2,
+                            "0"
+                          );
+                          const paddedDay = String(date.day).padStart(2, "0");
+                          nowDate = year + "-" + paddedMonth + "-" + paddedDay;
+                        }
+
                         return (
                           <td
                             key={idx}
@@ -195,17 +195,14 @@ function HomePage() {
                                           backgroundColor: schedule.color,
                                         }}
                                       >
-                                        {nowDate == schedule.startDate ? schedule.title : ""}
+                                        {nowDate == schedule.startDate
+                                          ? schedule.title
+                                          : ""}
                                       </div>
-                                      
                                     </div>
-
-                                     
-                                  )
+                                  );
                                 }
                               })}
-
-                              
                             </div>
                           </td>
                         );

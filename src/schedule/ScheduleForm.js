@@ -3,7 +3,6 @@ import styles from "../css/ScheduleForm.module.css";
 import { LocalHostInfoContext } from "../context/LocalHostInfoContext";
 
 const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
-  
   const [data, setData] = useState({
     no: 0,
     title: "",
@@ -18,34 +17,40 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
     auth: 0,
     state: "",
     category: "",
-    color: "",
+    color: "#1E90FF",
     regDate: "",
   });
-  
-    useEffect(() => {
-      if(onNo){
-        
-        fetch(
-          `${LocalHostInfoContext.schedulePath}/api/getSchedule?no=${onNo}`
-        ) // 일정 불러오는 백엔드 API 주소
-        .then((res) => res.json())
+
+  useEffect(() => {
+    if (onNo) {
+      fetch(`${LocalHostInfoContext.schedulePath}/api/getSchedule?no=${onNo}`) // 일정 불러오는 백엔드 API 주소
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! 상태코드: ${res.status}`);
+          }
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            return res.json();
+          } else {
+            throw new Error("JSON 형식이 아닌 응답입니다.");
+          }
+        })
         .then((info) => {
           // console.log(info);  // 실제 반환 값 확인
           setData(info); // 예: [{title, startDate, endDate, color}]
-          
         })
         .catch((err) => {
-          console.error("일정 불러오기 실패:", err);
+          console.error("일정 불러오기 실패1:", err);
         });
-      }
-    },[onNo]);
+    }
+  }, [onNo]);
   const handleSubmit = () => {
     const newEvent = data;
     console.log(newEvent);
     let path = "";
-    if(onNo == ""){
+    if (onNo == "") {
       path = "save";
-    }else{
+    } else {
       path = "modify";
     }
     
@@ -67,7 +72,8 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
       .then((data) => {
         // 위에서 response.json()이 완료된 후 실제 데이터를 다룸
         window.location.reload();
-        console.log("서버 응답:", data);
+        onSave(newEvent);
+        onClose();
         alert("성공적으로 전송되었습니다.");
       })
       .catch((error) => {
@@ -75,8 +81,6 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
         console.error("전송 실패:", error);
         alert("데이터 전송 실패");
       });
-    onSave(newEvent);
-    onClose();
   };
 
   const changeValue = (e) => {
@@ -154,6 +158,31 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
             value={data.memo}
             onChange={(e) => changeValue(e)}
           />
+
+          <label className={styles.label}>권한</label>
+          <div className={styles.formGroup}>
+            <div className={styles.radioGroup}>
+              <input
+                type="radio"
+                name="auth"
+                value="1"
+                checked={data.state === "Y"}
+                onChange={changeValue}
+                id="auth1"
+              />
+              <label htmlFor="auth1">팀장</label>
+              <input
+                type="radio"
+                name="auth"
+                value="3"
+                checked={data.state === "N"}
+                onChange={changeValue}
+                id="auth2"
+              />
+              <label htmlFor="auth2">팀원</label>
+            </div>
+          </div>
+
           <div className={styles.formGroup}>
             <label className={styles.label}>알림설정</label>
             <input
@@ -180,8 +209,8 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
             </select>
           </div>
 
+          <label className={styles.label}>공개 여부</label>
           <div className={styles.formGroup}>
-            <label className={styles.label}>공개 여부</label>
             <div className={styles.radioGroup}>
               <input
                 type="radio"
@@ -202,6 +231,33 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
               />
               <label htmlFor="state2">비공개</label>
             </div>
+          </div>
+          <label className={styles.label}>색상</label>
+          <div className={styles.colorPalette}>
+            {[
+              "#1E90FF",
+              "#FF6347",
+              "#32CD32",
+              "#FFD700",
+              "#8A2BE2",
+              "#FF69B4",
+            ].map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setData({ ...data, color })}
+                style={{
+                  backgroundColor: color,
+                  width: "24px",
+                  height: "24px",
+                  marginRight: "6px",
+                  border:
+                    data.color === color ? "2px solid black" : "1px solid #ccc",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                }}
+              />
+            ))}
           </div>
 
           <label className={styles.label}>일정</label>
