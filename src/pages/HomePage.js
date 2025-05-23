@@ -7,7 +7,7 @@ import "../css/Schedule.css";
 import ScheduleForm from "../schedule/ScheduleForm";
 import TeamForm from "../team/TeamForm";
 import { LocalHostInfoContext } from "../context/LocalHostInfoContext";
-import Notification from '../schedule/Notification';
+import NotificationList from '../schedule/NotificationList';
 
 function HomePage() {
   const today = new Date();
@@ -43,6 +43,8 @@ function HomePage() {
   const [schedules, setSchedules] = useState([]);
 
   useEffect(() => {
+    // today 데이터 가져와서 반복문 하기.
+    addNotification("✅ 페이지가 로드되었습니다");
     fetch(
       `${LocalHostInfoContext.schedulePath}/api/scheduleList?firstday=${firstDayStr}&lastday=${lastDayStr}`
     ) // 일정 불러오는 백엔드 API 주소
@@ -65,12 +67,29 @@ function HomePage() {
     console.log("일정 등록됨:", event);
   };
 
+  // 알림
+  const [notifications, setNotifications] = useState([]);
+
+  const addNotification = (message) => {
+    const newNotification = {
+      id: Date.now(), // 고유 ID
+      message,
+    };
+    setNotifications((prev) => [...prev, newNotification]);
+  };
+
+  const removeNotification = (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+  // 알림
+  
   return (
     <>
-      <div style={{ paddingTop: '50px' }}>
-        <Notification message="🔔 오늘 오후 2시에 회의가 예정되어 있습니다." />
-        
-      </div>
+      <NotificationList
+        notifications={notifications}
+        onClose={removeNotification}
+      />
+
       <Header
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}

@@ -232,33 +232,7 @@ const ScheduleModal = ({ isOpen, onClose, onSave, onNo }) => {
               <label htmlFor="state2">비공개</label>
             </div>
           </div>
-          <label className={styles.label}>색상</label>
-          <div className={styles.colorPalette}>
-            {[
-              "#1E90FF",
-              "#FF6347",
-              "#32CD32",
-              "#FFD700",
-              "#8A2BE2",
-              "#FF69B4",
-            ].map((color) => (
-              <button
-                key={color}
-                type="button"
-                onClick={() => setData({ ...data, color })}
-                style={{
-                  backgroundColor: color,
-                  width: "24px",
-                  height: "24px",
-                  marginRight: "6px",
-                  border:
-                    data.color === color ? "2px solid black" : "1px solid #ccc",
-                  borderRadius: "50%",
-                  cursor: "pointer",
-                }}
-              />
-            ))}
-          </div>
+         
 
           <label className={styles.label}>일정</label>
           <div className={styles.formGroup}>
